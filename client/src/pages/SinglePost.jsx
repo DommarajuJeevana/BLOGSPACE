@@ -4,13 +4,12 @@ import toast from "react-hot-toast";
 import api from "../utils/api";
 import { useAuth } from "../context/AuthContext";
 
-const formatDate = (date) => {
-  return new Date(date).toLocaleDateString("en-US", {
+const formatDate = (date) =>
+  new Date(date).toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
   });
-};
 
 const readTime = (content) => {
   const words = content?.split(" ").length || 0;
@@ -39,8 +38,8 @@ const SinglePost = () => {
       setLoading(true);
 
       const [postRes, commentsRes] = await Promise.all([
-        api.get(`/posts/${id}`),
-        api.get(`/comments/${id}`),
+        api.get(`/api/posts/${id}`),
+        api.get(`/api/comments/${id}`),
       ]);
 
       setPost(postRes.data);
@@ -57,7 +56,7 @@ const SinglePost = () => {
     if (!window.confirm("Delete this post?")) return;
 
     try {
-      await api.delete(`/posts/${id}`);
+      await api.delete(`/api/posts/${id}`);
       toast.success("Post deleted");
       navigate("/");
     } catch (err) {
@@ -79,7 +78,7 @@ const SinglePost = () => {
     try {
       setCommentLoading(true);
 
-      const { data } = await api.post(`/comments/${id}`, {
+      const { data } = await api.post(`/api/comments/${id}`, {
         content: newComment,
       });
 
@@ -100,11 +99,9 @@ const SinglePost = () => {
     try {
       setDeletingComment(commentId);
 
-      await api.delete(`/comments/${commentId}`);
+      await api.delete(`/api/comments/${commentId}`);
 
-      setComments(
-        comments.filter((comment) => comment._id !== commentId)
-      );
+      setComments(comments.filter((c) => c._id !== commentId));
 
       toast.success("Comment deleted");
     } catch (err) {
@@ -128,11 +125,11 @@ const SinglePost = () => {
 
   const isOwner = user && post.author?._id === user._id;
   const isAdmin = user && user.role === "admin";
-    return (
+
+  return (
     <div className="min-h-screen bg-white">
       <div className="max-w-4xl mx-auto px-6 py-10">
 
-        {/* Author Info */}
         <div className="flex items-center gap-4 mb-8">
           <div className="w-12 h-12 rounded-full bg-black text-white flex items-center justify-center font-bold text-lg">
             {post.author?.name?.charAt(0).toUpperCase()}
@@ -149,39 +146,30 @@ const SinglePost = () => {
           </div>
         </div>
 
-        {/* Category */}
         <div className="mb-4">
           <span className="text-sm px-3 py-1 rounded-full bg-gray-100 text-gray-600">
             {post.category}
           </span>
         </div>
 
-        {/* Title */}
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight mb-6">
-          {post.title}
-        </h1>
+        <h1 className="text-4xl font-bold mb-6">{post.title}</h1>
 
-        {/* Excerpt */}
-        <p className="text-xl text-gray-500 leading-relaxed mb-8">
-          {post.excerpt}
-        </p>
+        <p className="text-xl text-gray-500 mb-8">{post.excerpt}</p>
 
-        {/* Cover Image */}
         {post.coverImage && (
           <img
             src={post.coverImage}
             alt={post.title}
-            className="w-full rounded-xl mb-10 object-cover max-h-[500px]"
+            className="w-full rounded-xl mb-10"
           />
         )}
 
-        {/* Edit/Delete */}
         {(isOwner || isAdmin) && (
           <div className="flex gap-4 mb-10">
             {isOwner && (
               <button
                 onClick={() => navigate(`/edit/${post._id}`)}
-                className="px-5 py-2 rounded-full border border-gray-300 hover:bg-gray-100 transition"
+                className="px-5 py-2 border rounded-full"
               >
                 Edit
               </button>
@@ -189,121 +177,80 @@ const SinglePost = () => {
 
             <button
               onClick={handleDeletePost}
-              className="px-5 py-2 rounded-full bg-red-600 text-white hover:bg-red-700 transition"
+              className="px-5 py-2 bg-red-600 text-white rounded-full"
             >
               Delete
             </button>
           </div>
         )}
 
-        {/* Content */}
-        <article className="prose prose-lg max-w-none text-gray-800">
-          <div className="whitespace-pre-wrap leading-8">
-            {post.content}
-          </div>
-        </article>
-
-        {/* Divider */}
-        <div className="border-t border-gray-200 my-16"></div>
-                {/* Comments */}
-        <section>
-          <h2 className="text-2xl font-bold text-gray-900 mb-8">
-            Responses ({comments.length})
-          </h2>
-
-          {user ? (
-            <form onSubmit={handleAddComment} className="mb-10">
-              <textarea
-                rows={4}
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                placeholder="What are your thoughts?"
-                className="w-full border border-gray-300 rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-black resize-none"
-              />
-
-              <button
-                type="submit"
-                disabled={commentLoading || !newComment.trim()}
-                className="mt-4 px-6 py-3 bg-black text-white rounded-full hover:bg-gray-800 disabled:opacity-50"
-              >
-                {commentLoading ? "Posting..." : "Post Comment"}
-              </button>
-            </form>
-          ) : (
-            <div className="mb-10 p-6 bg-gray-50 rounded-xl">
-              <p className="text-gray-600 mb-4">
-                Sign in to join the discussion.
-              </p>
-
-              <button
-                onClick={() => navigate("/login")}
-                className="px-5 py-2 bg-black text-white rounded-full"
-              >
-                Sign In
-              </button>
-            </div>
-          )}
-
-          <div className="space-y-8">
-            {comments.length === 0 ? (
-              <p className="text-gray-500">No responses yet.</p>
-            ) : (
-              comments.map((comment) => {
-                const canDelete =
-                  user &&
-                  (comment.author?._id === user._id ||
-                    user.role === "admin");
-
-                return (
-                  <div
-                    key={comment._id}
-                    className="border-b border-gray-200 pb-6"
-                  >
-                    <div className="flex items-center justify-between mb-3">
-                      <div>
-                        <h3 className="font-semibold text-gray-900">
-                          {comment.author?.name}
-                        </h3>
-
-                        <p className="text-sm text-gray-500">
-                          {formatDate(comment.createdAt)}
-                        </p>
-                      </div>
-
-                      {canDelete && (
-                        <button
-                          onClick={() =>
-                            handleDeleteComment(comment._id)
-                          }
-                          disabled={deletingComment === comment._id}
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          {deletingComment === comment._id
-                            ? "Deleting..."
-                            : "Delete"}
-                        </button>
-                      )}
-                    </div>
-
-                    <p className="text-gray-700 leading-7 whitespace-pre-wrap">
-                      {comment.content}
-                    </p>
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </section>
-
-        {/* Back Button */}
-        <div className="mt-16">
-          <button
-            onClick={() => navigate("/")}
-            className="px-6 py-3 border border-gray-300 rounded-full hover:bg-gray-100 transition"
-          >
-            ← Back to Home
-          </button>
+        <div className="whitespace-pre-wrap leading-8 mb-10">
+          {post.content}
         </div>
+
+        <hr />
+
+        <h2 className="text-2xl font-bold mt-10 mb-6">
+          Responses ({comments.length})
+        </h2>
+
+        {user ? (
+          <form onSubmit={handleAddComment}>
+            <textarea
+              rows={4}
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              className="w-full border p-3 rounded-xl"
+              placeholder="Write comment..."
+            />
+
+            <button
+              type="submit"
+              disabled={commentLoading}
+              className="mt-3 px-6 py-2 bg-black text-white rounded-full"
+            >
+              {commentLoading ? "Posting..." : "Post Comment"}
+            </button>
+          </form>
+        ) : (
+          <button onClick={() => navigate("/login")}>
+            Sign in to comment
+          </button>
+        )}
+
+        <div className="mt-8 space-y-6">
+          {comments.map((c) => {
+            const canDelete =
+              user &&
+              (c.author?._id === user._id || user.role === "admin");
+
+            return (
+              <div key={c._id} className="border-b pb-4">
+                <div className="flex justify-between">
+                  <p className="font-semibold">{c.author?.name}</p>
+
+                  {canDelete && (
+                    <button
+                      onClick={() => handleDeleteComment(c._id)}
+                    >
+                      {deletingComment === c._id ? "Deleting..." : "Delete"}
+                    </button>
+                  )}
+                </div>
+
+                <p className="text-gray-700">{c.content}</p>
+              </div>
+            );
+          })}
+        </div>
+
+        <button
+          onClick={() => navigate("/")}
+          className="mt-10 px-5 py-2 border rounded-full"
+        >
+          Back
+        </button>
+
       </div>
     </div>
   );

@@ -30,7 +30,6 @@ const Home = () => {
 
   const navigate = useNavigate();
 
-  // FETCH POSTS
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -47,16 +46,13 @@ const Home = () => {
     fetchPosts();
   }, []);
 
-  // FILTER LOGIC
   useEffect(() => {
     let result = [...posts];
 
-    // category filter
     if (category !== 'All') {
       result = result.filter(p => p.category === category);
     }
 
-    // search filter
     if (search.trim()) {
       const q = search.toLowerCase();
 
@@ -79,7 +75,6 @@ const Home = () => {
   return (
     <div style={{ backgroundColor: '#fafafa', minHeight: '100vh' }}>
 
-      {/* HERO */}
       <div style={{
         background: 'linear-gradient(135deg, #1a1a2e, #16213e, #0f3460)',
         padding: '4rem 2rem',
@@ -94,7 +89,6 @@ const Home = () => {
           Discover blogs, stories, and insights
         </p>
 
-        {/* SEARCH BAR */}
         <div style={{
           marginTop: '1.5rem',
           display: 'flex',
@@ -118,7 +112,6 @@ const Home = () => {
         </div>
       </div>
 
-      {/* CATEGORY FILTER */}
       <div style={{
         display: 'flex',
         overflowX: 'auto',
@@ -144,7 +137,6 @@ const Home = () => {
         ))}
       </div>
 
-      {/* CONTENT */}
       <div style={{
         maxWidth: '1100px',
         margin: '0 auto',
@@ -170,11 +162,9 @@ const Home = () => {
                   cursor: 'pointer',
                   overflow: 'hidden',
                   boxShadow: '0 1px 6px rgba(0,0,0,0.1)',
-                  transition: '0.2s'
                 }}
               >
 
-                {/* IMAGE */}
                 <img
                   src={
                     post.coverImage ||
@@ -188,7 +178,6 @@ const Home = () => {
                   }}
                 />
 
-                {/* CONTENT */}
                 <div style={{ padding: '1rem' }}>
                   <h3>{post.title}</h3>
                   <p style={{ color: '#555' }}>

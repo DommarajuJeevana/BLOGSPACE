@@ -32,7 +32,6 @@ const EditPost = () => {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  // ✅ FIX: safe auth + fetch flow
   useEffect(() => {
     if (!user) return;
 
@@ -42,7 +41,12 @@ const EditPost = () => {
 
         const authorId = data?.author?._id;
 
-        if (authorId && user._id && authorId !== user._id && user.role !== 'admin') {
+        if (
+          authorId &&
+          user._id &&
+          authorId !== user._id &&
+          user.role !== 'admin'
+        ) {
           toast.error('Not authorized to edit this post');
           navigate('/');
           return;
@@ -79,6 +83,7 @@ const EditPost = () => {
 
       toast.success('Post updated successfully!');
       navigate(`/post/${id}`);
+
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to update post');
     } finally {
@@ -106,7 +111,6 @@ const EditPost = () => {
     marginBottom: '0.45rem',
   };
 
-  // ✅ FIX: prevent UI flash before auth resolves
   if (!user) return null;
 
   if (fetching) {

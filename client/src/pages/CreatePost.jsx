@@ -30,7 +30,7 @@ const CreatePost = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // ✅ FIX: safe redirect (NOT inside render)
+  // ✅ FIXED: removed /api from frontend route
   useEffect(() => {
     if (!user) {
       navigate('/login');
@@ -53,14 +53,16 @@ const CreatePost = () => {
     setLoading(true);
 
     try {
+      // backend API call (axios already has /api in baseURL)
       const { data } = await api.post('/posts', form);
 
       toast.success('Post published successfully!');
 
-      // ✅ safer navigation (handles different backend responses)
       const postId = data?._id || data?.post?._id;
 
+      // ✅ FIXED: removed /api from frontend route
       navigate(`/post/${postId}`);
+
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to create post');
     } finally {

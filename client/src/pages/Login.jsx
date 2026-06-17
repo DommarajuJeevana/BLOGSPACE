@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import api from '../utils/api';
@@ -17,7 +17,6 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     setLoading(true);
 
     try {
@@ -69,7 +68,6 @@ const Login = () => {
     }}>
       <div style={{ width: '100%', maxWidth: '440px' }}>
 
-        {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <Link to="/" style={{
             color: '#e94560',
@@ -81,7 +79,6 @@ const Login = () => {
           </Link>
         </div>
 
-        {/* Card */}
         <div style={{
           backgroundColor: '#fff',
           borderRadius: '20px',
@@ -94,7 +91,6 @@ const Login = () => {
 
           <form onSubmit={handleSubmit}>
 
-            {/* Email */}
             <input
               type="email"
               name="email"
@@ -107,7 +103,6 @@ const Login = () => {
               onBlur={() => setFocused('')}
             />
 
-            {/* Password */}
             <input
               type="password"
               name="password"

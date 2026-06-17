@@ -14,8 +14,6 @@ const formatDate = (date) =>
 const readTime = (content) =>
   Math.max(1, Math.ceil((content?.split(' ').length || 0) / 200));
 
-const getAvatar = (name) => name?.charAt(0)?.toUpperCase() || '?';
-
 const MyPosts = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -24,13 +22,12 @@ const MyPosts = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // ✅ FIX: safer auth redirect
   useEffect(() => {
     if (!user) return;
 
     const fetchMyPosts = async () => {
       try {
-        const { data } = await api.get('/posts/user/myposts');
+        const { data } = await api.get('/posts/user/myposts'); // ✅ correct
         setPosts(data || []);
       } catch (err) {
         toast.error('Failed to load your posts');
@@ -52,7 +49,6 @@ const MyPosts = () => {
     try {
       await api.delete(`/posts/${postId}`);
 
-      // ✅ FIX: functional update (no stale state bug)
       setPosts(prev => prev.filter(p => p._id !== postId));
 
       toast.success('Post deleted successfully');
@@ -68,7 +64,6 @@ const MyPosts = () => {
     navigate(`/edit/${postId}`);
   };
 
-  // ⚠️ auth guard render safety
   if (!user) return null;
 
   if (loading) {
@@ -87,15 +82,13 @@ const MyPosts = () => {
   return (
     <div style={{ padding: '2rem', maxWidth: '1100px', margin: '0 auto' }}>
 
-      <h2 style={{ marginBottom: '1.5rem' }}>
-        {user?.name}'s Posts
-      </h2>
+      <h2>{user?.name}'s Posts</h2>
 
       {posts.length === 0 ? (
         <p>No posts yet.</p>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {posts.map((post, index) => (
+          {posts.map((post) => (
             <div
               key={post._id}
               onClick={() => navigate(`/post/${post._id}`)}
@@ -106,16 +99,13 @@ const MyPosts = () => {
                 cursor: 'pointer',
               }}
             >
-
-              {/* Title */}
               <h3>{post.title}</h3>
 
-              {/* Meta */}
               <p style={{ fontSize: '0.85rem', color: '#666' }}>
-                {post.category} • {readTime(post.content)} min read • {formatDate(post.createdAt)}
+                {post.category} • {readTime(post.content)} min read •{' '}
+                {formatDate(post.createdAt)}
               </p>
 
-              {/* Actions */}
               <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
                 <button onClick={(e) => handleEdit(post._id, e)}>
                   Edit
