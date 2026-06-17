@@ -15,7 +15,7 @@ const app = express();
 
 /* ✅ FIXED CORS (this removes network error issues) */
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: process.env.CLIENT_URL,
   credentials: true,
 }));
 
