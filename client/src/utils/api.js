@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://blogspace-7azg.onrender.com',
+  baseURL: 'https://blogspace-7azg.onrender.com/api',
   withCredentials: true,
 });
 
