@@ -7,7 +7,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const stored = localStorage.getItem('user');
       return stored ? JSON.parse(stored) : null;
-    } catch {
+    } catch (error) {
       return null;
     }
   });
