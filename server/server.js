@@ -14,10 +14,15 @@ connectDB();
 const app = express();
 
 /* ✅ FIXED CORS (this removes network error issues) */
-app.use(cors({
-  origin: process.env.CLIENT_URL,
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: [
+      "https://blogspace-dommarajujeevana.vercel.app",
+      "https://blogspace-git-main-dommarajujeevanas-projects.vercel.app"
+    ],
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 app.use(cookieParser());
