@@ -38,8 +38,8 @@ const SinglePost = () => {
       setLoading(true);
 
       const [postRes, commentsRes] = await Promise.all([
-        api.get(`/api/posts/${id}`),
-        api.get(`/api/comments/${id}`),
+        api.get(`/posts/${id}`),
+        api.get(`/comments/${id}`),
       ]);
 
       setPost(postRes.data);
@@ -56,7 +56,7 @@ const SinglePost = () => {
     if (!window.confirm("Delete this post?")) return;
 
     try {
-      await api.delete(`/api/posts/${id}`);
+      await api.delete(`/posts/${id}`);
       toast.success("Post deleted");
       navigate("/");
     } catch (err) {
@@ -78,7 +78,7 @@ const SinglePost = () => {
     try {
       setCommentLoading(true);
 
-      const { data } = await api.post(`/api/comments/${id}`, {
+      const { data } = await api.post(`/comments/${id}`, {
         content: newComment,
       });
 
@@ -99,7 +99,7 @@ const SinglePost = () => {
     try {
       setDeletingComment(commentId);
 
-      await api.delete(`/api/comments/${commentId}`);
+      await api.delete(`/comments/${commentId}`);
 
       setComments(comments.filter((c) => c._id !== commentId));
 
